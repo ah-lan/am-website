@@ -157,3 +157,138 @@ profiles ──< news
 6. `player_stats` (Sprint 7 — league table itself is calculated, not a table)
 7. `news` (Sprint 8)
 8. `transfers` (Sprint 9)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+????????????????????DAY 2????????????????????????????????????????????????
+# Sprint 1 Handoff — Auth & Dashboards
+
+For: [Teammate name]
+From: [Your name]
+What's already done: `profiles` table + auto-create trigger, live in Supabase.
+What you're building: signup/login pages + the two dashboard shells.
+
+---
+
+## 1. What already exists in the database
+
+### `profiles` table
+
+| Column | Type | Notes |
+|---|---|---|
+| id | uuid | same as the Supabase Auth user id — you never set this yourself |
+| name | text | auto-filled from signup, see below |
+| phone | text | **empty by default — your signup form needs to fill this in** |
+| role | text | `player` / `manager` / `admin` — **defaults to `player`, your form needs to let the user pick** |
+| status | text | `pending` / `approved` / `suspended` — leave alone for now |
+| avatar_url | text | nullable, ignore for Sprint 1 |
+| created_at | timestamptz | automatic |
+
+### How a profile gets created — important
+
+When someone signs up through Supabase Auth, a database trigger automatically
+creates a matching row in `profiles` with just `id` and `name` filled in.
+**You don't insert into `profiles` yourself on signup.** But `role` and
+`phone` are NOT set by the trigger — after signup succeeds, your form needs
+to run one `update` call to fill those in. See the code below.
+
+---
+
+## 2. Environment setup (5 min)
+
+Pull the latest from GitHub, then create your own `.env.local` in the project
+root (this file is git-ignored, you need your own copy):
+
+```
+NEXT_PUBLIC_SUPABASE_URL=<ask for this>
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<ask for this>
+```
+
+The Supabase client is already set up at `lib/supabase.js` — import it,
+don't recreate it:
+
+```js
+import { supabase } from '@/lib/supabase'
+```
+
+---
+
+## 3. What to build
+
+### Signup page
+A form collecting: name, email, password, phone, role (radio: Player / Manager).
+
+```js
+async function handleSignup({ name, email, password, phone, role }) {
+  // Step 1: create the auth user — this fires the trigger,
+  // which creates a `profiles` row with id + name already filled in
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { name } }, // this is what the trigger reads for `name`
+  })
+  if (error) throw error
+
+  // Step 2: fill in the fields the trigger doesn't set
+  const { error: updateError } = await supabase
+    .from('profiles')
+    .update({ phone, role })
+    .eq('id', data.user.id)
+  if (updateError) throw updateError
+
+  // Step 3: redirect based on role
+  // player/manager -> their dashboard
+  // manager -> also show "pending approval" messaging, since status defaults to 'approved'
+  //            for now, but managers should show as pending once we wire that up (Sprint 2)
+}
+```
+
+### Login page
+
+```js
+async function handleLogin({ email, password }) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) throw error
+  // fetch their profile to know which dashboard to send them to
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role, status')
+    .eq('id', data.user.id)
+    .single()
+  // redirect to /dashboard/player or /dashboard/manager based on profile.role
+}
+```
+
+### Google Sign-In
+Use `supabase.auth.signInWithOAuth({ provider: 'google' })`. Same trigger
+fires, same profile gets created — just no password step. Ask before
+building this if Google OAuth hasn't been enabled in the Supabase dashboard
+yet (Authentication → Providers).
+
+### Dashboard shells
+Two empty pages for now — `/dashboard/player` and `/dashboard/manager` —
+each just showing "Welcome, {profile.name}" and a sidebar/navbar. Real
+content comes in later sprints.
+
+---
+
+## 4. Questions to ask before you start, not after
+
+- Has Google OAuth been enabled in Supabase yet? (Authentication → Providers)
+- What should happen if someone tries to log in before their manager account
+  is approved? (Not solved yet — flag it, don't guess at it.)
+- Do you have your own `.env.local` values yet?
