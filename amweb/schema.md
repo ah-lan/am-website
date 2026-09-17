@@ -39,8 +39,9 @@ Created automatically via a trigger when a new auth user signs up.
 | name | text | |
 | logo_url | text | nullable, stored in Supabase Storage |
 | founded_year | int | nullable |
-
 ---
+
+
 
 ### players
 A person on a team roster. **Not the same as a `profiles` row** — most players
