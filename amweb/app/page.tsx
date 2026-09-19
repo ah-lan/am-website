@@ -28,6 +28,7 @@ export default function Home() {
   const [pendingConfirmation, setPendingConfirmation] = useState(false);
   const [phone, setPhone] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [passwordMismatch, setPasswordMismatch] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -53,6 +54,7 @@ export default function Home() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setErrorMessage("");
+    setPasswordMismatch(false);
 
     if (!supabase) {
       setErrorMessage("Authentication is not configured yet. Add the Supabase environment variables to continue.");
@@ -73,7 +75,7 @@ export default function Home() {
     }
 
     if (isSignUp && password !== confirmPassword) {
-      setErrorMessage("Passwords do not match.");
+      setPasswordMismatch(true);
       setIsLoading(false);
       return;
     }
@@ -165,8 +167,8 @@ export default function Home() {
           </div>
 
           <div className="mode-switch" role="tablist" aria-label="Authentication mode">
-            <button className={!isSignUp ? "active" : ""} onClick={() => { setIsSignUp(false); setSubmitted(false); }} role="tab" aria-selected={!isSignUp}>Sign in</button>
-            <button className={isSignUp ? "active" : ""} onClick={() => { setIsSignUp(true); setSubmitted(false); }} role="tab" aria-selected={isSignUp}>Create account</button>
+            <button className={!isSignUp ? "active" : ""} onClick={() => { setIsSignUp(false); setSubmitted(false); setPasswordMismatch(false); }} role="tab" aria-selected={!isSignUp}>Sign in</button>
+            <button className={isSignUp ? "active" : ""} onClick={() => { setIsSignUp(true); setSubmitted(false); setPasswordMismatch(false); }} role="tab" aria-selected={isSignUp}>Create account</button>
           </div>
 
           {errorMessage && <p className="auth-error" role="alert">{errorMessage}</p>}
@@ -195,10 +197,11 @@ export default function Home() {
                 <span>Email address</span>
                 <input type="email" name="email" placeholder="you@example.com" autoComplete="email" required />
               </label>
+              {passwordMismatch && <p className="field-error" role="alert">Passwords do not match.</p>}
               <label>
                 <span>Password</span>
                 <span className="password-wrap">
-                  <input type={showPassword ? "text" : "password"} name="password" placeholder="Enter your password" minLength={8} required />
+                  <input type={showPassword ? "text" : "password"} name="password" placeholder="Enter your password" minLength={8} onChange={() => setPasswordMismatch(false)} required />
                   <button type="button" className="password-toggle" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "Hide" : "Show"}</button>
                 </span>
               </label>
@@ -206,7 +209,7 @@ export default function Home() {
                 <label>
                   <span>Confirm password</span>
                   <span className="password-wrap">
-                    <input type={showPassword ? "text" : "password"} name="confirmPassword" placeholder="Re-enter your password" minLength={8} required />
+                    <input type={showPassword ? "text" : "password"} name="confirmPassword" placeholder="Re-enter your password" minLength={8} onChange={() => setPasswordMismatch(false)} required />
                   </span>
                 </label>
               )}

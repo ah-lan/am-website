@@ -112,7 +112,7 @@ export default function DashboardPage() {
 
       const { data: profile, error } = await supabase
         .from("profiles")
-        .select("name, role")
+        .select("name, role, status")
         .eq("id", user.id)
         .single();
 
@@ -124,6 +124,13 @@ export default function DashboardPage() {
 
       const profileName = profile?.name || user.user_metadata?.name || user.email?.split("@")[0] || "there";
       const profileRole = profile?.role === "manager" ? "manager" : "player";
+
+      if (profileRole === "manager" && profile?.status === "pending") {
+        setIsLoading(false);
+        router.replace("/pending-approval");
+        return;
+      }
+
       const initials = profileName
         .split(" ")
         .filter(Boolean)
