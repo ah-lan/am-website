@@ -26,7 +26,7 @@ export default function PendingApprovalPage() {
         <p className="approval-note">We&apos;ll let you know as soon as your account is approved.</p>
         <button className="submit-button" onClick={handleSignOut} disabled={isSigningOut}>
           {isSigningOut ? "Signing out..." : "Sign out"}<span aria-hidden="true">↪</span>
-        </button>
+        </button>                            
       </section>
     </main>
   );

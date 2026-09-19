@@ -63,7 +63,7 @@ export default function ForgotPasswordPage() {
               <label><span>Email address</span><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" autoComplete="email" required /></label>
               <button className="submit-button" type="submit" disabled={isLoading}>{isLoading ? "Sending..." : "Send reset link"}<span aria-hidden="true">↗</span></button>
             </form>
-            <Link className="back-link" href="/">← Back to sign in</Link>
+            <Link className="back-link" href="/">Back to sign in</Link>
           </>
         )}
       </section>

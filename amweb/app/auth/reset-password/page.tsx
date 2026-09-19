@@ -96,7 +96,7 @@ export default function ResetPasswordPage() {
             <button className="submit-button" type="submit" disabled={isLoading}>{isLoading ? "Updating..." : "Update password"}<span aria-hidden="true">↗</span></button>
           </form>
         )}
-        <Link className="back-link" href="/">← Back to sign in</Link>
+        <Link className="back-link" href="/">Back to sign in</Link>
       </section>
     </main>
   );

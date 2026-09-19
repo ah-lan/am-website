@@ -19,6 +19,8 @@ Sprint 1 authentication and dashboard work is implemented:
 
 The dashboard currently uses designed sample content for player and manager sections. Live booking, pitch, team, messaging, and admin data modules are planned for later sprints.
 
+Sprint 2 team management is now available at `/teams`. Run `backend/sql/002_teams.sql` and `backend/sql/003_team_logos_storage.sql` before using live team creation. Approved managers can create and delete their own teams and upload team logos; authenticated users can view the team list.
+
 ## Supabase authentication setup
 
 1. Copy `.env.local.example` to `.env.local` and set:
