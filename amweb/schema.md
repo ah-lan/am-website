@@ -16,14 +16,14 @@ Conventions:
 
 ### profiles
 Extends Supabase Auth. One row per person with a login account.
-Created automatically via a trigger when a new auth user signs up.
+Created automatically via a database trigger when a new auth user signs up. The trigger reads `name`, `phone`, and `role` from Auth metadata; the frontend does not insert or complete the profile row.
 
 | Column | Type | Notes |
 |---|---|---|
 | id | uuid PK | → `auth.users.id` (same id, not a separate one) |
 | name | text | display name |
-| phone | text | verified via SMS OTP |
-| role | text | `player` / `manager` / `admin` |
+| phone | text | read from signup metadata; verified via SMS OTP later |
+| role | text | read from signup metadata: `player` / `manager` / `admin` |
 | status | text | `pending` / `approved` / `suspended` — managers start as `pending` |
 | avatar_url | text | nullable |
 

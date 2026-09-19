@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
+import { validateEmail } from "@/lib/auth-validation";
 
 const roleOptions = [
   {
@@ -37,20 +38,7 @@ export default function Home() {
 
       const { data } = await supabase.auth.getUser();
       const user = data.user;
-      const userPhone = user?.user_metadata?.phone;
-      const userRole = user?.user_metadata?.role;
-
-      if (!user || typeof userPhone !== "string" || typeof userRole !== "string") {
-        return;
-      }
-
-      const { error } = await supabase
-        .from("profiles")
-        .update({ phone: userPhone, role: userRole })
-        .eq("id", user.id);
-
-      if (error) {
-        setErrorMessage("Your email is confirmed, but we could not finish your profile. Please try again.");
+      if (!user) {
         return;
       }
 
@@ -73,9 +61,16 @@ export default function Home() {
 
     setIsLoading(true);
     const formData = new FormData(event.currentTarget);
-    const email = String(formData.get("email") ?? "");
+    const email = String(formData.get("email") ?? "").trim();
     const password = String(formData.get("password") ?? "");
     const confirmPassword = String(formData.get("confirmPassword") ?? "");
+
+    const emailError = validateEmail(email);
+    if (emailError) {
+      setErrorMessage(emailError);
+      setIsLoading(false);
+      return;
+    }
 
     if (isSignUp && password !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
@@ -98,16 +93,7 @@ export default function Home() {
       if (error) {
         setErrorMessage(error.message);
       } else if (data.session && data.user) {
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .update({ phone: signupPhone, role })
-          .eq("id", data.user.id);
-
-        if (profileError) {
-          setErrorMessage("Your account was created, but we could not save your profile details.");
-        } else {
-          router.push("/dashboard");
-        }
+        router.push("/dashboard");
       } else {
         setPendingConfirmation(true);
         setSubmitted(true);
@@ -207,7 +193,7 @@ export default function Home() {
               )}
               <label>
                 <span>Email address</span>
-                <input type="email" name="email" placeholder="you@example.com" required />
+                <input type="email" name="email" placeholder="you@example.com" autoComplete="email" required />
               </label>
               <label>
                 <span>Password</span>
@@ -240,7 +226,7 @@ export default function Home() {
               ) : (
                 <div className="form-meta">
                   <label className="remember"><input type="checkbox" /> <span>Remember me</span></label>
-                  <button type="button" className="text-button">Forgot password?</button>
+                  <Link className="text-button" href="/auth/forgot-password">Forgot password?</Link>
                 </div>
               )}
 

@@ -36,5 +36,5 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/?auth_error=confirmation", request.url));
   }
 
-  return NextResponse.redirect(new URL("/?confirmed=1", request.url));
+  return NextResponse.redirect(new URL("/dashboard", request.url));
 }

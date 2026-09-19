@@ -9,7 +9,7 @@ Sprint 1 authentication and dashboard work is implemented:
 - Player and turf manager role selection using `player` and `manager` values
 - Email confirmation callback at `/auth/callback`
 - Profile updates for `phone` and `role` after authentication
-- Database-triggered profile creation remains responsible for `id` and `name`
+- Database-triggered profile creation owns `id`, `name`, `phone`, `role`, and manager approval status
 - Protected dashboard behavior that redirects unauthenticated users to sign-in
 - Role-aware dashboard content based on `profiles.role`
 - Real profile name and avatar initials loaded from Supabase
@@ -32,9 +32,17 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
 ```text
 http://localhost:3000/auth/callback
+http://localhost:3000/auth/reset-password
 https://your-production-domain.com/auth/callback
+https://your-production-domain.com/auth/reset-password
 ```
 
 3. Enable email confirmation for the current signup flow. Users confirm their email through the `/auth/callback` route before entering the dashboard.
 
-The signup form sends the display name as Auth metadata. The database trigger creates the `profiles` row; the browser then updates only `phone` and `role` for the authenticated user. It never inserts a profile or changes `id`, `status`, or `avatar_url`.
+The signup form sends the display name, phone, and role as Auth metadata. The database trigger in `backend/sql/001_profiles.sql` creates the complete `profiles` row; the browser does not insert or update profiles after signup. It never controls `id`, `status`, or `avatar_url`.
+
+Password recovery is available at `/auth/forgot-password`. Supabase sends a recovery email and returns the user to `/auth/reset-password`, where they can set and confirm a new password.
+
+## Backend SQL
+
+Database commands live in [`backend/sql`](backend/sql). Run migrations in filename order in the Supabase SQL Editor. See [`backend/README.md`](backend/README.md) for the backend workflow.

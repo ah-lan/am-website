@@ -1,0 +1,67 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "generatedAt": "2026-09-19T04:51:21.889Z",
+    "language": "typescript",
+    "projectRoot": "C:\\Users\\IMAAN\\Desktop\\AMSPORTS\\am-website\\amweb",
+    "analysisTimeMs": 4472,
+    "totalFiles": 0,
+    "totalFunctions": 0,
+    "totalEdges": 0,
+    "totalDeadFunctions": 0,
+    "totalUnusedParameters": 0,
+    "config": {
+      "language": "typescript",
+      "include": [
+        "app/**/*.ts",
+        "app/**/*.tsx",
+        "lib/**/*.ts"
+      ],
+      "exclude": [
+        "node_modules/**",
+        "dist/**",
+        "build/**",
+        "vendor/**",
+        "__pycache__/**",
+        ".git/**",
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "**/*.d.ts",
+        ".next/**"
+      ],
+      "entryPoints": [],
+      "output": "codegraph-output.json",
+      "typescript": {
+        "tsconfig": "tsconfig.json"
+      },
+      "go": {},
+      "python": {},
+      "projectRoot": "C:\\Users\\IMAAN\\Desktop\\AMSPORTS\\am-website\\amweb"
+    }
+  },
+  "nodes": [],
+  "edges": [],
+  "entryNode": {
+    "id": "__entry__",
+    "name": "External Callers",
+    "targets": []
+  },
+  "clusters": [],
+  "stats": {
+    "deadFunctions": {
+      "count": 0,
+      "percentage": 0,
+      "byPackage": {}
+    },
+    "unusedParameters": {
+      "count": 0,
+      "percentage": 0,
+      "byPackage": {}
+    },
+    "entryPoints": {
+      "count": 0,
+      "functions": []
+    },
+    "largestFunctions": []
+  }
+}
